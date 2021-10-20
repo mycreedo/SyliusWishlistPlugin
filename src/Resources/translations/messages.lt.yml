@@ -6,8 +6,11 @@ bitbag_sylius_wishlist_plugin:
         your_wishlist_is_empty: Jūsų norų sąrašas tuščias
         added_wishlist_item: Prekė įtraukta į norų sąrašą.
         removed_wishlist_item: Prekė pašalinta iš norų sąrašo.
+        clear_wishlist: Elenco chiaro
+        wishlist_cleared: La lista dei desideri è stata cancellata.
         add_items_to_cart: Pridėti norų sąraše esančias prekes į krepšelį
         added_to_cart: Norų sąraše esančios prekės pridėtos į krepšelį.
         save_wishlist: Įrašyti norų sąrašą
         variant_not_unique: Šią prekę jūs jau turite savo norų sąraše
+        increase_quantity: Aumentare la quantità di almeno un articolo.
 
