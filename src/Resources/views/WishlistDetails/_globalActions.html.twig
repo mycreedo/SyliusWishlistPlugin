@@ -1,3 +1,10 @@
+<a
+    href="{{ path('bitbag_sylius_wishlist_plugin_shop_wishlist_clean', {'wishlistId': wishlist.id}) }}"
+    class="bitbag-clean-wishlist ui red basic button">
+    <i class="icon remove"></i>
+    {{ 'bitbag_sylius_wishlist_plugin.ui.clear_wishlist'|trans }}
+</a>
+
 <button type="submit" class="ui primary button" {{ sylius_test_html_attribute('wishlist-add-all-to-cart') }}>
     <i class="cart icon"></i>
     {{ 'bitbag_sylius_wishlist_plugin.ui.add_items_to_cart'|trans }}

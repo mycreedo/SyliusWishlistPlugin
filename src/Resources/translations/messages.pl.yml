@@ -6,6 +6,8 @@ bitbag_sylius_wishlist_plugin:
         your_wishlist_is_empty: Twoja lista życzeń jest pusta
         added_wishlist_item: Produkt został dodany do listy życzeń.
         removed_wishlist_item: Produkt został usunięty z listy życzeń.
+        clear_wishlist: Wyczyść listę
+        wishlist_cleared: Wszystkie produkty z listy życzeń zostały usunięte
         add_items_to_cart: Dodaj produkty z listy życzeń do koszyka
         added_to_cart: Produkty z listy życzeń zostały dodane do koszyka.
         save_wishlist: Zapisz listę życzeń
