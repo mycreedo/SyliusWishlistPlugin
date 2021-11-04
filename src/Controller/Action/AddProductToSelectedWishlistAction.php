@@ -10,25 +10,23 @@ declare(strict_types=1);
 
 namespace BitBag\SyliusWishlistPlugin\Controller\Action;
 
+use BitBag\SyliusWishlistPlugin\Command\Wishlist\AddProductToSelectedWishlist;
+use BitBag\SyliusWishlistPlugin\Entity\WishlistInterface;
 use BitBag\SyliusWishlistPlugin\Repository\WishlistRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Sylius\Component\Core\Model\ProductVariantInterface;
-use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
+use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class RemoveProductVariantFromWishlistAction
+final class AddProductToSelectedWishlistAction
 {
     private WishlistRepositoryInterface $wishlistRepository;
 
-    private ProductVariantRepositoryInterface $productVariantRepository;
-
-    private EntityManagerInterface $wishlistProductManager;
+    private ProductRepositoryInterface $productRepository;
 
     private FlashBagInterface $flashBag;
 
@@ -36,41 +34,36 @@ final class RemoveProductVariantFromWishlistAction
 
     private UrlGeneratorInterface $urlGenerator;
 
+    private MessageBusInterface $commandBus;
+
     public function __construct(
         WishlistRepositoryInterface $wishlistRepository,
-        ProductVariantRepositoryInterface $productVariantRepository,
-        EntityManagerInterface $wishlistProductManager,
+        ProductRepositoryInterface $productRepository,
         FlashBagInterface $flashBag,
         TranslatorInterface $translator,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
+        MessageBusInterface $commandBus
     ) {
         $this->wishlistRepository = $wishlistRepository;
-        $this->productVariantRepository = $productVariantRepository;
-        $this->wishlistProductManager = $wishlistProductManager;
-        $this->urlGenerator = $urlGenerator;
+        $this->productRepository = $productRepository;
         $this->flashBag = $flashBag;
         $this->translator = $translator;
+        $this->urlGenerator = $urlGenerator;
+        $this->commandBus = $commandBus;
     }
 
-    public function __invoke(int $wishlistId, Request $request): Response
+    public function __invoke(int $wishlistId, int $productId): Response
     {
-        /** @var ProductVariantInterface|null $variant */
-        $variant = $this->productVariantRepository->find($request->get('variantId'));
-        if (null === $variant) {
-            throw new NotFoundHttpException();
-        }
-
+        /** @var WishlistInterface $wishlist */
         $wishlist = $this->wishlistRepository->find($wishlistId);
 
-        foreach ($wishlist->getWishlistProducts() as $wishlistProduct) {
-            if ($variant === $wishlistProduct->getVariant()) {
-                $this->wishlistProductManager->remove($wishlistProduct);
-            }
-        }
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->find($productId);
 
-        $this->wishlistProductManager->flush();
-        $this->flashBag->add('success', $this->translator->trans('bitbag_sylius_wishlist_plugin.ui.removed_wishlist_item'));
+        $addProductToSelectedWishlist = new AddProductToSelectedWishlist($wishlist, $product);
+        $this->commandBus->dispatch($addProductToSelectedWishlist);
 
+        $this->flashBag->add('success', $this->translator->trans('bitbag_sylius_wishlist_plugin.ui.added_wishlist_item'));
         return new RedirectResponse($this->urlGenerator->generate('bitbag_sylius_wishlist_plugin_shop_wishlist_show_chosen_wishlist', [
             'wishlistId' => $wishlistId,
         ])

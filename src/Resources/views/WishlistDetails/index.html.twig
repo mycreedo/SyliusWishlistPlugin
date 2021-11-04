@@ -5,7 +5,9 @@
 {% block content %}
     <h1 class="ui header">
         <i class="circular heart icon"></i>
-        <div class="content">{{ 'bitbag_sylius_wishlist_plugin.ui.wishlist'|trans }}</div>
+        <div class="content">
+            {{ wishlist.name == null ? 'bitbag_sylius_wishlist_plugin.ui.wishlist'|trans : wishlist.name|trans }}
+        </div>
     </h1>
 
     <div class="ui hidden divider"></div>
